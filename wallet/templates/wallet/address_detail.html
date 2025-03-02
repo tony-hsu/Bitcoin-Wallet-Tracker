@@ -1,0 +1,69 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container mt-4">
+    <h2>Bitcoin Address Details</h2>
+    
+    <div class="card mb-4">
+        <div class="card-header d-flex justify-content-between align-items-center">
+            <h5 class="mb-0">{{ address.address }}</h5>
+            <a href="{% url 'wallet:sync_address' address.pk %}" class="btn btn-sm btn-success">Sync Now</a>
+        </div>
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-6">
+                    <p><strong>Label:</strong> {{ address.label|default:"Not set" }}</p>
+                    <p><strong>Current Balance:</strong> {{ address.current_balance }} BTC</p>
+                </div>
+                <div class="col-md-6">
+                    <p><strong>Added:</strong> {{ address.created_at }}</p>
+                    <p><strong>Last Synced:</strong> {{ address.last_synced|default:"Never" }}</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <h3>Transactions</h3>
+    
+    {% if transactions %}
+        <div class="table-responsive">
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th>Transaction Hash</th>
+                        <th>Amount</th>
+                        <th>Type</th>
+                        <th>Date</th>
+                        <th>Confirmations</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for tx in transactions %}
+                    <tr>
+                        <td>
+                            <a href="https://www.blockchain.com/btc/tx/{{ tx.tx_hash }}" target="_blank" class="text-truncate d-inline-block" style="max-width: 200px;">
+                                {{ tx.tx_hash }}
+                            </a>
+                        </td>
+                        <td class="{% if tx.is_sending %}text-danger{% else %}text-success{% endif %}">
+                            {% if tx.is_sending %}-{% else %}+{% endif %}{{ tx.amount }} BTC
+                        </td>
+                        <td>{% if tx.is_sending %}Sent{% else %}Received{% endif %}</td>
+                        <td>{{ tx.timestamp }}</td>
+                        <td>{{ tx.confirmations }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    {% else %}
+        <div class="alert alert-info">
+            No transactions found for this address. Try syncing to retrieve transactions.
+        </div>
+    {% endif %}
+    
+    <div class="mt-3">
+        <a href="{% url 'wallet:address_list' %}" class="btn btn-secondary">Back to Address List</a>
+    </div>
+</div>
+{% endblock %} 

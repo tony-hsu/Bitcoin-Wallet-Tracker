@@ -1,0 +1,64 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container mt-4">
+    <h2>Your Bitcoin Addresses</h2>
+    
+    <div class="mb-4 d-flex justify-content-between">
+        <div>
+            <a href="{% url 'wallet:add_address' %}" class="btn btn-primary">Add New Address</a>
+            {% if addresses %}
+            <a href="{% url 'wallet:sync_all_addresses' %}" class="btn btn-success">Sync All Addresses</a>
+            {% endif %}
+        </div>
+    </div>
+
+    {% if messages %}
+        {% for message in messages %}
+            <div class="alert alert-{{ message.tags }}">
+                {{ message }}
+            </div>
+        {% endfor %}
+    {% endif %}
+
+    {% if addresses %}
+        <div class="table-responsive">
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th>Address</th>
+                        <th>Label</th>
+                        <th>Current Balance</th>
+                        <th>Last Synced</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for address in addresses %}
+                    <tr>
+                        <td>
+                            <a href="{% url 'wallet:address_detail' address.pk %}">
+                                {{ address.address }}
+                            </a>
+                        </td>
+                        <td>{{ address.label|default:"-" }}</td>
+                        <td>{{ address.current_balance }} BTC</td>
+                        <td>{{ address.last_synced|default:"Never" }}</td>
+                        <td>
+                            <div class="btn-group" role="group">
+                                <a href="{% url 'wallet:sync_address' address.pk %}" class="btn btn-info btn-sm">Sync</a>
+                                <a href="{% url 'wallet:remove_address' address.pk %}" class="btn btn-danger btn-sm">Remove</a>
+                            </div>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    {% else %}
+        <div class="alert alert-info">
+            You haven't added any Bitcoin addresses yet.
+        </div>
+    {% endif %}
+</div>
+{% endblock %} 

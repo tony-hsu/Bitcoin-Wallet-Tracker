@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container mt-4">
+    <h2>Remove Bitcoin Address</h2>
+
+    <div class="alert alert-warning">
+        <p>Are you sure you want to remove this Bitcoin address?</p>
+        <p><strong>Address:</strong> {{ address.address }}</p>
+        {% if address.label %}
+            <p><strong>Label:</strong> {{ address.label }}</p>
+        {% endif %}
+    </div>
+
+    <form method="post">
+        {% csrf_token %}
+        <button type="submit" class="btn btn-danger">Yes, Remove</button>
+        <a href="{% url 'wallet:address_list' %}" class="btn btn-secondary">Cancel</a>
+    </form>
+</div>
+{% endblock %} 
