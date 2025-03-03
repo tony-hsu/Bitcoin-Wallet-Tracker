@@ -29,6 +29,7 @@
                         <th>Address</th>
                         <th>Label</th>
                         <th>Current Balance</th>
+                        <th>Transactions</th>
                         <th>Last Synced</th>
                         <th>Actions</th>
                     </tr>
@@ -43,6 +44,7 @@
                         </td>
                         <td>{{ address.label|default:"-" }}</td>
                         <td>{{ address.current_balance }} BTC</td>
+                        <td>{{ address.transaction_count }}</td>
                         <td>{{ address.last_synced|default:"Never" }}</td>
                         <td>
                             <div class="btn-group" role="group">

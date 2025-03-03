@@ -7,17 +7,23 @@
     <div class="card mb-4">
         <div class="card-header d-flex justify-content-between align-items-center">
             <h5 class="mb-0">{{ address.address }}</h5>
-            <a href="{% url 'wallet:sync_address' address.pk %}" class="btn btn-sm btn-success">Sync Now</a>
+            <div>
+                <a href="{% url 'wallet:sync_address' address.pk %}?fetch_transactions=false&reset_page=false" class="btn btn-sm btn-primary me-2">Sync Balance</a>
+                <button id="continue-sync-btn" class="btn btn-sm btn-success me-2">Continue Sync</button>
+                <a href="{% url 'wallet:sync_address' address.pk %}?fetch_transactions=true&reset_page=true" class="btn btn-sm btn-warning">Reset & Sync</a>
+            </div>
         </div>
         <div class="card-body">
             <div class="row">
                 <div class="col-md-6">
                     <p><strong>Label:</strong> {{ address.label|default:"Not set" }}</p>
                     <p><strong>Current Balance:</strong> {{ address.current_balance }} BTC</p>
+                    <p><strong>Transaction Count:</strong> {{ address.transaction_count }}</p>
                 </div>
                 <div class="col-md-6">
                     <p><strong>Added:</strong> {{ address.created_at }}</p>
                     <p><strong>Last Synced:</strong> {{ address.last_synced|default:"Never" }}</p>
+                    <p><strong>Last Fetched Page:</strong> {{ address.last_fetched_page }}</p>
                 </div>
             </div>
         </div>
@@ -56,6 +62,57 @@
                 </tbody>
             </table>
         </div>
+        
+        <!-- Pagination -->
+        {% if is_paginated %}
+        <nav aria-label="Transaction pagination">
+            <ul class="pagination justify-content-center">
+                {% if page_obj.has_previous %}
+                    <li class="page-item">
+                        <a class="page-link" href="?page=1">&laquo; First</a>
+                    </li>
+                    <li class="page-item">
+                        <a class="page-link" href="?page={{ page_obj.previous_page_number }}">Previous</a>
+                    </li>
+                {% else %}
+                    <li class="page-item disabled">
+                        <a class="page-link" href="#">&laquo; First</a>
+                    </li>
+                    <li class="page-item disabled">
+                        <a class="page-link" href="#">Previous</a>
+                    </li>
+                {% endif %}
+                
+                {% for num in page_obj.paginator.page_range %}
+                    {% if page_obj.number == num %}
+                        <li class="page-item active">
+                            <a class="page-link" href="?page={{ num }}">{{ num }}</a>
+                        </li>
+                    {% elif num > page_obj.number|add:'-3' and num < page_obj.number|add:'3' %}
+                        <li class="page-item">
+                            <a class="page-link" href="?page={{ num }}">{{ num }}</a>
+                        </li>
+                    {% endif %}
+                {% endfor %}
+                
+                {% if page_obj.has_next %}
+                    <li class="page-item">
+                        <a class="page-link" href="?page={{ page_obj.next_page_number }}">Next</a>
+                    </li>
+                    <li class="page-item">
+                        <a class="page-link" href="?page={{ page_obj.paginator.num_pages }}">Last &raquo;</a>
+                    </li>
+                {% else %}
+                    <li class="page-item disabled">
+                        <a class="page-link" href="#">Next</a>
+                    </li>
+                    <li class="page-item disabled">
+                        <a class="page-link" href="#">Last &raquo;</a>
+                    </li>
+                {% endif %}
+            </ul>
+        </nav>
+        {% endif %}
     {% else %}
         <div class="alert alert-info">
             No transactions found for this address. Try syncing to retrieve transactions.
@@ -66,4 +123,22 @@
         <a href="{% url 'wallet:address_list' %}" class="btn btn-secondary">Back to Address List</a>
     </div>
 </div>
+
+{% block extra_js %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const continueBtn = document.getElementById('continue-sync-btn');
+        
+        continueBtn.addEventListener('click', function() {
+            // Make a fetch request to trigger the task without page reload
+            fetch("{% url 'wallet:sync_address' address.pk %}?fetch_transactions=true&reset_page=false", {
+                method: 'GET',
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest'
+                }
+            });
+        });
+    });
+</script>
+{% endblock %}
 {% endblock %} 

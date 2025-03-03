@@ -8,6 +8,11 @@ class BitcoinAddress(models.Model):
     last_synced = models.DateTimeField(null=True, blank=True)
     current_balance = models.DecimalField(max_digits=30, decimal_places=8, default=0)
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='bitcoin_addresses')
+    transaction_count = models.IntegerField(default=0)
+    last_fetched_page = models.IntegerField(default=0, help_text="Last page of transactions fetched")
+    
+    def __str__(self):
+        return f"{self.address} ({self.label})" if self.label else self.address
 
 class Transaction(models.Model):
     tx_hash = models.CharField(max_length=100, unique=True)

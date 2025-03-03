@@ -1,15 +1,17 @@
 # Bitcoin Wallet Tracker
 
-The app should allow users to manage Bitcoin addresses, sync wallet transactions, and view balances and transaction history. This project is used to showcase a prototype for CoinTracker
+This app allows you to manage Bitcoin addresses, sync wallet transactions, and view balances and transaction history.
 
-[![Built with Cookiecutter Django](https://img.shields.io/badge/built%20with-Cookiecutter%20Django-ff69b4.svg?logo=cookiecutter)](https://github.com/cookiecutter/cookiecutter-django/)
-[![Ruff](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/astral-sh/ruff/main/assets/badge/v2.json)](https://github.com/astral-sh/ruff)
+## Features
 
-License: MIT
+- **Add/Remove Bitcoin Addresses**: Manage Bitcoin addresses with optional labels.
+- **Synchronize Transactions**: Fetch the latest transactions for Bitcoin addresses using the Blockchair API.
+- **View Balances and History**: See current balances and detailed transaction history.
+- **Asynchronous Processing**: Background processing of Bitcoin address synchronization using Celery and Redis.
 
-## Settings
+### API Usage
 
-Moved to [settings](https://cookiecutter-django.readthedocs.io/en/latest/1-getting-started/settings.html).
+The application uses the Blockchain.com API as the data source for Bitcoin address information and transactions.
 
 ## Basic Commands
 
@@ -23,31 +25,30 @@ Moved to [settings](https://cookiecutter-django.readthedocs.io/en/latest/1-getti
 
 For convenience, you can keep your normal user logged in on Chrome and your superuser logged in on Firefox (or similar), so that you can see how the site behaves for both kinds of users.
 
-### Type checks
+### Redis Setup
 
-Running type checks with mypy:
+This application uses Redis as a message broker for Celery tasks. You need to install and run Redis before starting the Celery worker.
 
-    $ mypy bitcoin_wallet_tracker
+#### Installing Redis
 
-### Test coverage
+On macOS:
 
-To run the tests, check your test coverage, and generate an HTML coverage report:
+```bash
+# Install Redis using Homebrew
+brew install redis
 
-    $ coverage run -m pytest
-    $ coverage html
-    $ open htmlcov/index.html
+# Start Redis as a background service
+brew services start redis
 
-#### Running tests with pytest
-
-    $ pytest
-
-### Live reloading and Sass CSS compilation
-
-Moved to [Live reloading and SASS compilation](https://cookiecutter-django.readthedocs.io/en/latest/2-local-development/developing-locally.html#using-webpack-or-gulp).
+# Verify Redis is running
+redis-cli ping  # Should return "PONG"
+```
 
 ### Celery
 
-This app comes with Celery.
+This app comes with Celery for asynchronous task processing, such as Bitcoin address synchronization.
+
+**Important**: Make sure Redis is installed and running before starting Celery (see [Redis Setup](#redis-setup) section).
 
 To run a celery worker:
 
@@ -72,6 +73,3 @@ cd bitcoin_wallet_tracker
 celery -A config.celery_app worker -B -l info
 ```
 
-## Deployment
-
-The following details how to deploy this application.

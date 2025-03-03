@@ -1,0 +1,2 @@
+python manage.py shell -c "from wallet.tasks import sync_bitcoin_address; result = sync_bitcoin_address(1, fetch_transactions=False); print(result)"
+pkill -f celery && celery -A config.celery_app worker -l info

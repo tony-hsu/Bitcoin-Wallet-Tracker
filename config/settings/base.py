@@ -326,6 +326,8 @@ SOCIALACCOUNT_ADAPTER = "bitcoin_wallet_tracker.users.adapters.SocialAccountAdap
 # https://docs.allauth.org/en/latest/socialaccount/configuration.html
 SOCIALACCOUNT_FORMS = {"signup": "bitcoin_wallet_tracker.users.forms.UserSocialSignupForm"}
 
+# Blockchair API
+BLOCKCHAIR_API_KEY = env("BLOCKCHAIR_API_KEY", default="")
 
 # Your stuff...
 # ------------------------------------------------------------------------------
