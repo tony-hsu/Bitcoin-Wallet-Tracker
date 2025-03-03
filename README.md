@@ -27,7 +27,7 @@ This app allows you to manage Bitcoin addresses, sync wallet transactions, and v
 
 3. **Install dependencies**:
    ```bash
-   pip install -r requirements.txt
+   pip install -r requirements/local.txt
    ```
 
 4. **Apply migrations**:
