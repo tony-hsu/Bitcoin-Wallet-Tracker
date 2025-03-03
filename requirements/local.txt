@@ -4,6 +4,7 @@
 Werkzeug[watchdog]==3.1.3 # https://github.com/pallets/werkzeug
 ipdb==0.13.13  # https://github.com/gotcha/ipdb
 watchfiles==1.0.4  # https://github.com/samuelcolvin/watchfiles
+drf-yasg==1.21.7  # https://github.com/axnsan12/drf-yasg
 
 # Testing
 # ------------------------------------------------------------------------------
@@ -16,6 +17,8 @@ pytest-sugar==1.0.0  # https://github.com/Frozenball/pytest-sugar
 # ------------------------------------------------------------------------------
 sphinx==8.2.1  # https://github.com/sphinx-doc/sphinx
 sphinx-autobuild==2024.10.3 # https://github.com/GaretJax/sphinx-autobuild
+openapi-spec-validator==0.7.1  # https://github.com/p1c2u/openapi-spec-validator
+pyyaml==6.0.1  # https://github.com/yaml/pyyaml
 
 # Code quality
 # ------------------------------------------------------------------------------

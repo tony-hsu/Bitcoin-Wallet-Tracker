@@ -6,6 +6,12 @@ from django.urls import include
 from django.urls import path
 from django.views import defaults as default_views
 from django.views.generic import TemplateView
+import yaml
+from pathlib import Path
+
+# Load the OpenAPI spec from yaml file
+with open(Path(__file__).resolve().parent.parent / 'docs' / 'openapi.yaml', 'r') as f:
+    schema_dict = yaml.safe_load(f)
 
 urlpatterns = [
     path("", TemplateView.as_view(template_name="pages/home.html"), name="home"),
@@ -21,6 +27,14 @@ urlpatterns = [
     path("accounts/", include("allauth.urls")),
     # Your stuff: custom urls includes go here
     path("wallet/", include("wallet.urls", namespace="wallet")),
+    # OpenAPI documentation
+    path('openapi.yaml', TemplateView.as_view(
+        template_name='docs/openapi.yaml',
+        content_type='text/yaml',
+    ), name='schema-yaml'),
+    path('swagger/', TemplateView.as_view(
+        template_name='docs/swagger.html',
+    ), name='swagger-ui'),
     # Media files
     *static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT),
 ]

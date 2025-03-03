@@ -1,0 +1,315 @@
+openapi: 3.0.3
+info:
+  title: Bitcoin Wallet Tracker API
+  description: |
+    API for tracking Bitcoin addresses and their transactions.
+    This API allows users to manage Bitcoin addresses and view transaction history.
+  version: 1.0.0
+  contact:
+    name: Bitcoin Wallet Tracker Support
+    url: https://github.com/yourusername/bitcoin_wallet_tracker
+servers:
+  - url: http://localhost:8000
+    description: Local development server
+  - url: https://your-production-domain.com
+    description: Production server
+
+tags:
+  - name: addresses
+    description: Bitcoin address management
+  - name: transactions
+    description: Bitcoin transaction operations
+
+paths:
+  /wallet/:
+    get:
+      summary: List all Bitcoin addresses
+      description: Returns a list of all Bitcoin addresses for the authenticated user
+      operationId: listAddresses
+      tags:
+        - addresses
+      security:
+        - cookieAuth: []
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/BitcoinAddress'
+        '401':
+          description: Unauthorized
+          
+  /wallet/add/:
+    post:
+      summary: Add a new Bitcoin address
+      description: Add a new Bitcoin address to track
+      operationId: addAddress
+      tags:
+        - addresses
+      security:
+        - cookieAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                address:
+                  type: string
+                  description: Bitcoin address to track
+                  example: "1A1zP1eP5QGefi2DMPTfTL5SLmv7DivfNa"
+                label:
+                  type: string
+                  description: Optional label for the address
+                  example: "Satoshi's Address"
+              required:
+                - address
+      responses:
+        '201':
+          description: Address successfully added
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BitcoinAddress'
+        '400':
+          description: Invalid input
+        '401':
+          description: Unauthorized
+          
+  /wallet/remove/{id}/:
+    delete:
+      summary: Remove a Bitcoin address
+      description: Remove a Bitcoin address from tracking
+      operationId: removeAddress
+      tags:
+        - addresses
+      security:
+        - cookieAuth: []
+      parameters:
+        - name: id
+          in: path
+          description: ID of the Bitcoin address to remove
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '204':
+          description: Address successfully removed
+        '401':
+          description: Unauthorized
+        '404':
+          description: Address not found
+          
+  /wallet/address/{id}/:
+    get:
+      summary: Get Bitcoin address details
+      description: Returns details of a specific Bitcoin address including balance and transaction history
+      operationId: getAddressDetails
+      tags:
+        - addresses
+      security:
+        - cookieAuth: []
+      parameters:
+        - name: id
+          in: path
+          description: ID of the Bitcoin address
+          required: true
+          schema:
+            type: integer
+            format: int64
+        - name: page
+          in: query
+          description: Page number for transaction pagination
+          required: false
+          schema:
+            type: integer
+            default: 1
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BitcoinAddressDetail'
+        '401':
+          description: Unauthorized
+        '404':
+          description: Address not found
+          
+  /wallet/sync/:
+    post:
+      summary: Sync all Bitcoin addresses
+      description: Synchronize all Bitcoin addresses to update balances and transactions
+      operationId: syncAllAddresses
+      tags:
+        - addresses
+      security:
+        - cookieAuth: []
+      responses:
+        '200':
+          description: Synchronization initiated
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "Synchronization of all addresses initiated"
+        '401':
+          description: Unauthorized
+          
+  /wallet/sync/{id}/:
+    post:
+      summary: Sync a specific Bitcoin address
+      description: Synchronize a specific Bitcoin address to update balance and transactions
+      operationId: syncAddress
+      tags:
+        - addresses
+      security:
+        - cookieAuth: []
+      parameters:
+        - name: id
+          in: path
+          description: ID of the Bitcoin address to sync
+          required: true
+          schema:
+            type: integer
+            format: int64
+        - name: fetch_transactions
+          in: query
+          description: Whether to fetch transactions during sync
+          required: false
+          schema:
+            type: boolean
+            default: true
+      responses:
+        '200':
+          description: Synchronization initiated
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "Synchronization initiated for address"
+        '401':
+          description: Unauthorized
+        '404':
+          description: Address not found
+
+components:
+  schemas:
+    BitcoinAddress:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+          example: 1
+        address:
+          type: string
+          example: "1A1zP1eP5QGefi2DMPTfTL5SLmv7DivfNa"
+        label:
+          type: string
+          example: "Satoshi's Address"
+        balance:
+          type: number
+          format: float
+          description: Balance in BTC
+          example: 68.3
+        total_received:
+          type: number
+          format: float
+          description: Total received in BTC
+          example: 68.3
+        total_sent:
+          type: number
+          format: float
+          description: Total sent in BTC
+          example: 0.0
+        n_tx:
+          type: integer
+          description: Number of transactions
+          example: 1
+        last_synced:
+          type: string
+          format: date-time
+          example: "2023-01-01T12:00:00Z"
+      required:
+        - id
+        - address
+        
+    Transaction:
+      type: object
+      properties:
+        hash:
+          type: string
+          example: "6f7cf9580f1c2dfb3c4d5d043cdbb128c640e3f20161245aa7372e9666168516"
+        timestamp:
+          type: string
+          format: date-time
+          example: "2009-01-03T18:15:05Z"
+        amount:
+          type: number
+          format: float
+          description: Transaction amount in BTC
+          example: 50.0
+        fee:
+          type: number
+          format: float
+          description: Transaction fee in BTC
+          example: 0.0
+        confirmations:
+          type: integer
+          example: 750000
+        is_incoming:
+          type: boolean
+          example: true
+      required:
+        - hash
+        - timestamp
+        - amount
+        
+    BitcoinAddressDetail:
+      type: object
+      properties:
+        address:
+          $ref: '#/components/schemas/BitcoinAddress'
+        transactions:
+          type: array
+          items:
+            $ref: '#/components/schemas/Transaction'
+        is_paginated:
+          type: boolean
+          example: true
+        page_obj:
+          type: object
+          properties:
+            number:
+              type: integer
+              example: 1
+            num_pages:
+              type: integer
+              example: 10
+            has_next:
+              type: boolean
+              example: true
+            has_previous:
+              type: boolean
+              example: false
+      required:
+        - address
+        - transactions
+        
+  securitySchemes:
+    cookieAuth:
+      type: apiKey
+      in: cookie
+      name: sessionid 
