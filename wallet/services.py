@@ -127,26 +127,9 @@ class BlockchairAPI:
 
 class BlockchainInfoAPI:
     """API for Bitcoin address information and transactions (no API key required)"""
-    RATE_LIMIT_DELAY = 10  # seconds between requests to avoid rate limiting
-    last_request_time = 0
-    
-    @classmethod
-    def _respect_rate_limit(cls):
-        """Add delay between requests to avoid rate limiting"""
-        current_time = time.time()
-        time_since_last_request = current_time - cls.last_request_time
-        
-        if cls.last_request_time > 0 and time_since_last_request < cls.RATE_LIMIT_DELAY:
-            # Wait to respect rate limit
-            sleep_time = cls.RATE_LIMIT_DELAY - time_since_last_request
-            print(f"Rate limiting: Waiting {sleep_time:.2f} seconds before next Blockchain.info API request")
-            time.sleep(sleep_time)
-        
-        cls.last_request_time = time.time()
     
     @classmethod
     def get_address_info(cls, address):
-        cls._respect_rate_limit()
         try:
             print(f"Using Blockchain.info API for address info: {address}")
             # Use the simpler /balance endpoint instead of /address
@@ -179,20 +162,8 @@ class BlockchainInfoAPI:
             print(f"Using Blockchain.info API for transactions: {address} (limit={limit}, offset={offset})")
             transactions = []
             
-            # Implement retry with exponential backoff
-            max_retries = 3
-            retry_delay = 30  # Start with 30 seconds
-            
-            for retry in range(max_retries):
-                if retry > 0:
-                    print(f"Retry attempt {retry}/{max_retries} after waiting {retry_delay} seconds")
-                    time.sleep(retry_delay)
-                    # Double the delay for next retry (exponential backoff)
-                    retry_delay *= 2
-                
-                # Respect rate limit before making the request
-                cls._respect_rate_limit()
-                
+            max_retries = 3            
+            for _ in range(max_retries):
                 url = f"https://blockchain.info/rawaddr/{address}?format=json&limit={limit}&offset={offset}"
                 print(f"Making API request with limit={limit}, offset={offset}")
                 
@@ -239,7 +210,7 @@ class BlockchainInfoAPI:
                     
                     return transactions
                 elif response.status_code == 429:
-                    print(f"Rate limited (429). Will retry in {retry_delay} seconds.")
+                    print(f"Rate limited (429). Will retry.")
                     # Continue to next retry iteration
                 else:
                     print(f"API Error: {response.status_code} - {response.text}")

@@ -10,9 +10,6 @@ django.setup()
 
 from wallet.services import BlockchainInfoAPI
 
-# Temporarily increase the rate limit delay for testing
-original_delay = BlockchainInfoAPI.RATE_LIMIT_DELAY
-BlockchainInfoAPI.RATE_LIMIT_DELAY = 60  # Set to 60 seconds for testing
 
 def test_get_address_info(address):
     """Test the get_address_info method with a given address"""
@@ -53,7 +50,6 @@ if __name__ == "__main__":
         test_address = sys.argv[1]
     
     print(f"Testing BlockchainInfoAPI with address: {test_address}")
-    print(f"Using increased rate limit delay of {BlockchainInfoAPI.RATE_LIMIT_DELAY} seconds")
     
     # Test get_address_info
     info_success = test_get_address_info(test_address)
@@ -71,5 +67,3 @@ if __name__ == "__main__":
     else:
         print("\nSome tests failed. BlockchainInfoAPI may not be working correctly.")
     
-    # Restore original delay
-    BlockchainInfoAPI.RATE_LIMIT_DELAY = original_delay 

@@ -76,9 +76,6 @@
             <li class="nav-item">
               <a class="nav-link" href="{% url 'wallet:address_list' %}">Wallet</a>
             </li>
-            <li class="nav-item">
-              <a class="nav-link" href="{% url 'about' %}">About</a>
-            </li>
             {% if request.user.is_authenticated %}
               <li class="nav-item">
                 <a class="nav-link"
@@ -119,7 +116,7 @@
     {% endif %}
     {% block main %}
       {% block content %}
-        <p>Use this document as a way to quick start any new project.</p>
+        <p>This app allows you to manage Bitcoin addresses, sync wallet transactions, and view balances and transaction history..</p>
       {% endblock content %}
     {% endblock main %}
 

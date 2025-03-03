@@ -9,6 +9,49 @@ This app allows you to manage Bitcoin addresses, sync wallet transactions, and v
 - **View Balances and History**: See current balances and detailed transaction history.
 - **Asynchronous Processing**: Background processing of Bitcoin address synchronization using Celery and Redis.
 
+## Getting Started (macOS)
+
+### Setting Up Your Environment
+
+1. **Clone the repository**:
+   ```bash
+   git clone https://github.com/yourusername/bitcoin_wallet_tracker.git
+   cd bitcoin_wallet_tracker
+   ```
+
+2. **Create and activate a virtual environment**:
+   ```bash
+   python -m venv .venv
+   source .venv/bin/activate
+   ```
+
+3. **Install dependencies**:
+   ```bash
+   pip install -r requirements.txt
+   ```
+
+4. **Apply migrations**:
+   ```bash
+   python manage.py migrate
+   ```
+
+### Starting the Server
+
+1. **Run the development server**:
+   ```bash
+   python manage.py runserver
+   ```
+   The application will be available at http://127.0.0.1:8000/
+
+2. **Start the Celery worker** (in a separate terminal):
+   ```bash
+   # Make sure to activate the virtual environment first
+   source .venv/bin/activate
+   
+   # Then start the Celery worker
+   celery -A config.celery_app worker -l info
+   ```
+
 ### API Usage
 
 The application uses the Blockchain.com API as the data source for Bitcoin address information and transactions.
@@ -29,9 +72,7 @@ For convenience, you can keep your normal user logged in on Chrome and your supe
 
 This application uses Redis as a message broker for Celery tasks. You need to install and run Redis before starting the Celery worker.
 
-#### Installing Redis
-
-On macOS:
+#### Installing Redis on macOS
 
 ```bash
 # Install Redis using Homebrew
